@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#D3D3D3",
     },
     buttonEnabled: {
-        backgroundColor: "#31CF67", // Cor do botão quando habilitado
+        backgroundColor: "#31CF67",
     },
     form: {
         width: "100%",

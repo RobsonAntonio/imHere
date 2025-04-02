@@ -1,16 +1,23 @@
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   Text,
   TextInput,
   TouchableOpacity,
   View,
   Platform,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Participant } from "../../components/Participant";
 import { styles } from "./styles";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import Toast from "react-native-toast-message";
+import ModalWeb from "../../components/ModalWeb";
+import ModalMobile from "../../components/ModalMobile";
 
 type CustomDateFormatOptions = {
   weekday: "long" | "short" | "narrow";
@@ -22,15 +29,24 @@ type CustomDateFormatOptions = {
 export default function Home() {
   const [participants, setParticipants] = useState<string[]>([]);
   const [participantName, setParticipantName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [participantToRemove, setParticipantToRemove] = useState<string | null>(
+    null
+  );
 
   function handleParticipantAdd() {
     if (participants.includes(participantName)) {
-      return Platform.OS === "web"
-        ? alert("Aluno já existe!")
-        : Alert.alert(
-            "Aluno existe",
-            "Já existe um aluno na lista com esse nome"
-          );
+      if (Platform.OS === "web") {
+        toast.error("Aluno já existe!");
+      } else {
+        Toast.show({
+          type: "error",
+          position: "top",
+          text1: "Aluno já existe!",
+          text2: "Já existe um aluno na lista com esse nome.",
+        });
+      }
+      return;
     }
     setParticipants((prevState) => [...prevState, participantName]);
     setParticipantName("");
@@ -38,24 +54,43 @@ export default function Home() {
 
   function handleParticipantRemove(name: string) {
     if (Platform.OS === "web") {
-      const shouldRemove = window.confirm(`Deseja remover o aluno ${name}?`);
-      if (shouldRemove) {
-        setParticipants((prevState) =>
-          prevState.filter((participant) => participant !== name)
-        );
-      }
+      setParticipantToRemove(name);
+      setIsModalOpen(true);
     } else {
-      Alert.alert("Remover", `Remover o aluno ${name}?`, [
+      Alert.alert("Remover aluno", `Deseja remover o aluno ${name}?`, [
         {
           text: "Sim",
-          onPress: () =>
+          onPress: () => {
             setParticipants((prevState) =>
               prevState.filter((participant) => participant !== name)
-            ),
+            );
+            Toast.show({
+              type: "success",
+              position: "top",
+              text1: `Aluno ${name} removido com sucesso!`,
+            });
+          },
         },
-        { text: "Não", style: "cancel" },
+        {
+          text: "Não",
+          style: "cancel",
+        },
       ]);
     }
+  }
+
+  function confirmRemoveWeb() {
+    if (participantToRemove) {
+      setParticipants((prevState) =>
+        prevState.filter((participant) => participant !== participantToRemove)
+      );
+      setIsModalOpen(false);
+      toast.success(`Aluno ${participantToRemove} removido com sucesso!`);
+    }
+  }
+
+  function cancelRemoveWeb() {
+    setIsModalOpen(false);
   }
 
   function formatDate(date: Date, options: CustomDateFormatOptions): string {
@@ -127,6 +162,32 @@ export default function Home() {
           </Text>
         )}
       />
+
+      {Platform.OS === "web" && (
+        // Exibir o Toast Container no Web
+        <ToastContainer />
+      )}
+
+      {Platform.OS !== "web" && (
+        // Mostrar Toast Message no App
+        <Toast />
+      )}
+
+      {Platform.OS === "web" ? (
+        <ModalWeb
+          isModalOpen={isModalOpen}
+          cancelRemoveWeb={cancelRemoveWeb}
+          participantToRemove={participantToRemove}
+          confirmRemoveWeb={confirmRemoveWeb}
+        />
+      ) : (
+        <ModalMobile
+          isModalOpen={isModalOpen}
+          cancelRemoveWeb={cancelRemoveWeb}
+          participantToRemove={participantToRemove}
+          confirmRemoveWeb={confirmRemoveWeb}
+        />
+      )}
     </LinearGradient>
   );
 }

@@ -30,10 +30,9 @@ export const styles = StyleSheet.create({
         flex: 1,
         height: 56,
         borderRadius: 5,
-        color: "#18181B",
+        borderColor: Platform.OS === 'web' ? 'gray' : 'blue',
         padding: 16,
         fontSize: Platform.OS === "web" ? 18 : 16,
-        marginRight: 12,
         maxWidth: "100%",
     },
     buttonText: {
@@ -48,7 +47,6 @@ export const styles = StyleSheet.create({
         backgroundColor: "#31CF67",
         alignItems: "center",
         justifyContent: "center",
-        marginLeft: Platform.OS === "web" ? 16 : 0,
     },
     buttonDisabled: {
         backgroundColor: "#D3D3D3",

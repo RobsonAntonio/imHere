@@ -1,10 +1,14 @@
 
 * start projeto
 - nvm use
-- npx expo start
+- yarn start
 
 
-https://github.com/user-attachments/assets/b7a9edb1-c7c4-455d-b0a0-580d0e9a1e2f
+Mobile
+https://github.com/user-attachments/assets/ca5f8652-6d01-40c0-95d7-d088c4af9dc0
+
+Web
+https://github.com/user-attachments/assets/f3be7b0b-6e82-4a8b-96f7-c815cda9c0af
 
 
 
